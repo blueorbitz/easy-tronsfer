@@ -3,10 +3,6 @@ import Box from '@mui/material/Box'
 import { Theme } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import useMediaQuery from '@mui/material/useMediaQuery'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
 
 // ** Icons Imports
 import Menu from 'mdi-material-ui/Menu'
@@ -45,18 +41,6 @@ const AppBarContent = (props: Props) => {
             <Menu />
           </IconButton>
         ) : null}
-        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-          <InputLabel id="tron-network-label">Network</InputLabel>
-          <Select
-            labelId='tron-network-label'
-            id='tron-network'
-            value={null}
-            label='network'
-          >
-            <MenuItem value={'mainnet'}>Mainnet</MenuItem>
-            <MenuItem value={'shasha'}>Shasha Testnet</MenuItem>
-          </Select>
-        </FormControl>
       </Box>
       <Box className='actions-right' sx={{ display: 'flex', alignItems: 'center' }}>
         <ModeToggler settings={settings} saveSettings={saveSettings} />
