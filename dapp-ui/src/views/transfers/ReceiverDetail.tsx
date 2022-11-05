@@ -1,4 +1,6 @@
 // ** React Imports
+import { useEffect, useState } from 'react'
+import { getProviders } from 'next-auth/react'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -15,13 +17,13 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import mediumConfig from 'src/configs/mediumConfig'
 import { debounce } from 'src/@core/utils/web-generic'
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 
 const ReceiverDetail = () => {
+  const [providers, setProviders] = useState<any>();
   const {
-    receiverMedium, setReceiverMedium,
+    receiverProvider, setReceiverProvider,
     receiverUserId, setReceiverUserId,
   } = useTransferContext();
 
@@ -35,6 +37,12 @@ const ReceiverDetail = () => {
     setReceiverUserId(e.target.value)
   };
 
+  useEffect(() => {
+    (async () => {
+      setProviders(await getProviders())
+    })()
+  }, [])
+
   return (
     <Card>
       <CardHeader title='Receiver detail' titleTypographyProps={{ variant: 'h6' }} />
@@ -43,16 +51,16 @@ const ReceiverDetail = () => {
           <Grid container spacing={5}>
             <Grid item xs={12} md={3}>
               <FormControl fullWidth>
-                <InputLabel id='medium-label'>Medium</InputLabel>
+                <InputLabel id='provider-label'>Provider</InputLabel>
                 <Select
-                  labelId='medium-label'
-                  value={receiverMedium}
-                  label='Medium'
-                  onChange={e => setReceiverMedium(e.target.value)}
+                  labelId='provider-label'
+                  value={receiverProvider}
+                  label='Provider'
+                  onChange={e => setReceiverProvider(e.target.value)}
                 >
                   {
-                    mediumConfig.supportedList
-                      .map(o => <MenuItem value={o.value}>{o.label}</MenuItem>)
+                    providers && Object.values(providers)
+                      .map((o: any) => <MenuItem key={o.id} value={o.id}>{o.name}</MenuItem>)
                   }
                 </Select>
               </FormControl>

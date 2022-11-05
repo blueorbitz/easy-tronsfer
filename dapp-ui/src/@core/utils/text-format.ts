@@ -1,4 +1,7 @@
 export function shortenText(text: string, length: number) {
+  if (text == null)
+    return text
+
   if (text.length < length)
     return text
   

@@ -1,8 +1,9 @@
 // ** React Imports
-import { useState, SyntheticEvent, Fragment } from 'react'
+import React, { useState, SyntheticEvent, Fragment } from 'react'
 
 // ** Next Import
 import { useRouter } from 'next/router'
+import { useSession, signOut } from 'next-auth/react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -47,6 +48,7 @@ const UserDropdown = () => {
   // ** Hooks
   const router = useRouter()
   const tron = useTronWeb()
+  const { data: session } = useSession()
 
   const handleDropdownOpen = (event: SyntheticEvent) => {
     setAnchorEl(event.currentTarget)
@@ -134,19 +136,20 @@ const UserDropdown = () => {
               </Box>
             </MenuItem>
         }
-        <Divider />
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/pages/login')}>
-          <Box sx={styles}>
-            <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
-            Logout Twitter
-          </Box>
-        </MenuItem>
-        <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose('/pages/login')}>
-          <Box sx={styles}>
-            <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
-            Logout Reddit
-          </Box>
-        </MenuItem>
+        {
+          session && <React.Fragment>
+            <Divider />
+            <MenuItem sx={{ p: 0 }} onClick={() => {
+              signOut()
+              handleDropdownClose()
+            }}>
+              <Box sx={styles}>
+                <LogoutVariant sx={{ marginRight: 2, fontSize: '1.375rem', color: 'text.secondary' }} />
+                {`Logout ${session.account.provider}`}
+              </Box>
+            </MenuItem>
+          </React.Fragment>
+        }
       </Menu>
     </Fragment>
   )

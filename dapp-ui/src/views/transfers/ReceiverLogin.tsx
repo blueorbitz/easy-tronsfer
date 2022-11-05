@@ -1,45 +1,35 @@
 // ** React Imports
-import { useState } from 'react'
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
 
 // ** Custom Components Imports
-import mediumConfig from 'src/configs/mediumConfig'
-import { Button, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 
 const ReceiverLogin = () => {
-  const [medium, setMedium] = useState('')
+  const { data: session } = useSession()
 
   return (
     <Card>
       <CardHeader title='Receiver Login' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <FormControl fullWidth sx={{ mr: 5 }}>
-            <InputLabel id='medium-label'>Medium</InputLabel>
-            <Select
-              labelId='medium-label'
-              value={medium}
-              label='Medium'
-              onChange={e => setMedium(e.target.value)}
-            >
-              {
-                mediumConfig.supportedList
-                  .map(o => <MenuItem value={o.value}>{o.label}</MenuItem>)
-              }
-            </Select>
-          </FormControl>
+          <Box>
+            <Typography variant='body2'>
+              Sign in using your preferred provider where you have received the token.
+            </Typography>
+          </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'right' }}>
-            <Button variant='contained' size='large'>Login</Button>
+            {
+              session
+                ? <Button variant='contained' onClick={() => signOut()} color='error'>Sign Out</Button>
+                : <Button variant='contained' onClick={() => signIn(undefined, { callbackUrl: '/receive' })}>Sign In</Button>
+            }
           </Box>
         </Box>
       </CardContent>
