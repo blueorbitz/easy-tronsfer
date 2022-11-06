@@ -1,5 +1,5 @@
 // ** React Imports
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { getProviders } from 'next-auth/react'
 
 // ** MUI Imports
@@ -17,24 +17,20 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
-import { debounce } from 'src/@core/utils/web-generic'
+import { useDebounce, useUpdateEffect } from 'usehooks-ts'
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 
 const ReceiverDetail = () => {
-  const [providers, setProviders] = useState<any>();
+  const [providers, setProviders] = useState<any>()
   const {
     receiverProvider, setReceiverProvider,
     receiverUserId, setReceiverUserId,
+    receiverUsername, setReceiverUsername,
   } = useTransferContext();
+  const debouncedReceiverUsername = useDebounce<string>(receiverUsername, 1000)
 
-  const debounceReceiverUserId = debounce(async function (e: React.ChangeEvent<HTMLInputElement>) {
-    const userId = e.target.value
-    // do something
-  });
-
-  const onChangeReceiverUserId = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debounceReceiverUserId(e)
-    setReceiverUserId(e.target.value)
+  const onChangeReceiverUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReceiverUsername(e.target.value)
   };
 
   useEffect(() => {
@@ -42,6 +38,27 @@ const ReceiverDetail = () => {
       setProviders(await getProviders())
     })()
   }, [])
+
+  useUpdateEffect(() => {
+    if (receiverUsername === '') {
+      setReceiverUserId('')
+      return
+    }
+
+    (async () => {
+      try {
+        switch (receiverProvider) {
+          case 'github':
+            const response = await fetch('https://api.github.com/users/' + receiverUsername)
+            const data = await response.json()
+            setReceiverUserId(data.id.toString() ?? '')
+            break;
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+  }, [debouncedReceiverUsername])
 
   return (
     <Card>
@@ -70,9 +87,9 @@ const ReceiverDetail = () => {
                 fullWidth
                 type='text'
                 label='Receiver username'
-                helperText='@username is valid'
-                value={receiverUserId}
-                onChange={onChangeReceiverUserId}
+                helperText={`${receiverUsername || '@username'}'s ID is ${receiverUserId || 'invalid'}`}
+                value={receiverUsername}
+                onChange={e => setReceiverUsername(e.target.value)}
               />
             </Grid>
 

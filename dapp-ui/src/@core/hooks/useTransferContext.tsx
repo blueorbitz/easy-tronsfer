@@ -8,6 +8,7 @@ export const TransferContextProvider = (props: React.ComponentProps<any>) => {
   const [transferAmount, setTransferAmount] = useState(0)
   const [receiverProvider, setReceiverProvider] = useState('')
   const [receiverUserId, setReceiverUserId] = useState('')
+  const [receiverUsername, setReceiverUsername] = useState('')
 
   return (
     <TransferContext.Provider value={{
@@ -15,6 +16,7 @@ export const TransferContextProvider = (props: React.ComponentProps<any>) => {
       transferAmount, setTransferAmount,
       receiverProvider, setReceiverProvider,
       receiverUserId, setReceiverUserId,
+      receiverUsername, setReceiverUsername,
     }}>
       {props.children}
     </TransferContext.Provider>

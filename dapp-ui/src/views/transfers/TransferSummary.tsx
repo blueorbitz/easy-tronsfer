@@ -19,18 +19,22 @@ const TransferSummary = () => {
     transferAmount,
     receiverProvider,
     receiverUserId,
+    receiverUsername,
   } = useTransferContext()
 
   return (
     <Card>
       <CardHeader title='Summary' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        <Typography variant='subtitle1'>{`Receiver [${receiverProvider}]: ${receiverUserId}`}</Typography>
+        <Typography variant='subtitle1'>{`Receiver: [${receiverProvider}] ${receiverUsername}`}</Typography>
+        <Typography variant='body2'>
+          {`ProviderId: ${receiverUserId}`}
+        </Typography>
         <Typography variant='body2'>
           {`From: ${tron.address}`}
         </Typography>
         {
-          contractAddress !== '' &&
+          contractAddress != null &&
           <Typography variant='body2'>
             {`Token Contract: ${contractAddress}`}
           </Typography>
@@ -39,7 +43,7 @@ const TransferSummary = () => {
           {`Amount: ${transferAmount} ${tron.trc20.symbol || 'TRX'}`}
         </Typography>
         <Typography variant='body2'>
-          {`Meta: { type: ${receiverProvider}, userId: ${receiverUserId} }`}
+          {`Meta: { type: ${receiverProvider}, userId: ${receiverUserId}, username: ${receiverUsername} }`}
         </Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant='h6'>

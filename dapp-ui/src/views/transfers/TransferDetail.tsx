@@ -16,8 +16,8 @@ import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 
 // ** Custom Components Imports
+import { useDebounce, useUpdateEffect } from 'usehooks-ts'
 import useTronWeb from 'src/@core/hooks/useTronWeb'
-import { debounce } from 'src/@core/utils/web-generic'
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 
 const TransferDetail = () => {
@@ -27,21 +27,14 @@ const TransferDetail = () => {
     tokenAddress, setTokenAddress,
     transferAmount, setTransferAmount,
   } = useTransferContext()
+  const debounceTokenAddress = useDebounce<string>(tokenAddress, 1000)
 
-  const debounceTokenAddress = debounce(async function (e: React.ChangeEvent<HTMLInputElement>) {
-    const address = e.target.value
-    await tron.trc20.setContractAddress(address)
-  });
-
-  const onChangeTokenAddress = (e: React.ChangeEvent<HTMLInputElement>) => {
-    debounceTokenAddress(e)
-    setTokenAddress(e.target.value)
-  };
-
-  const onChangeTransferAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const amount = parseFloat(e.target.value)
-    setTransferAmount(amount)
-  };
+  useUpdateEffect(() => {
+    (async () => {
+      const tokenDetails = await tron.trc20.setContractAddress(tokenAddress)
+      console.log(tokenDetails)
+    })()
+  }, [debounceTokenAddress])
 
   return (
     <Card>
@@ -71,7 +64,7 @@ const TransferDetail = () => {
                   type='text'
                   label='Contract Address'
                   value={tokenAddress}
-                  onChange={onChangeTokenAddress}
+                  onChange={e => setTokenAddress(e.target.value)}
                 />
                 {
                   tron.trc20.error === '' || tokenAddress === ''
@@ -87,7 +80,7 @@ const TransferDetail = () => {
                 label='Amount'
                 helperText={`Amount in ${tron.trc20.symbol || 'TRX'}`}
                 value={transferAmount}
-                onChange={onChangeTransferAmount}
+                onChange={e => setTransferAmount(parseFloat(e.target.value))}
               />
             </Grid>
 
