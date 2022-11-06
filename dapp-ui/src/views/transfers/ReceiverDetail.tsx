@@ -47,11 +47,17 @@ const ReceiverDetail = () => {
 
     (async () => {
       try {
+        let response: Response|undefined, data: any;
         switch (receiverProvider) {
           case 'github':
-            const response = await fetch('https://api.github.com/users/' + receiverUsername)
-            const data = await response.json()
+            response = await fetch('https://api.github.com/users/' + receiverUsername)
+            data = await response.json()
             setReceiverUserId(data.id.toString() ?? '')
+            break;
+          case 'twitter':
+            response = await fetch('/api/twitter/' + receiverUsername)
+            data = await response.json()
+            setReceiverUserId(data.id ?? '')
             break;
         }
       } catch (error) {
