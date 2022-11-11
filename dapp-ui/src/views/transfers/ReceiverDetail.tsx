@@ -1,6 +1,7 @@
 // ** React Imports
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { getProviders } from 'next-auth/react'
+import type { ComponentFlowType } from 'types/app'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -20,7 +21,7 @@ import Typography from '@mui/material/Typography'
 import { useDebounce, useUpdateEffect } from 'usehooks-ts'
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 
-const ReceiverDetail = () => {
+const ReceiverDetail = ({ onNext }: ComponentFlowType) => {
   const [providers, setProviders] = useState<any>()
   const {
     receiverProvider, setReceiverProvider,
@@ -28,6 +29,12 @@ const ReceiverDetail = () => {
     receiverUsername, setReceiverUsername,
   } = useTransferContext();
   const debouncedReceiverUsername = useDebounce<string>(receiverUsername, 1000)
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (receiverUserId !== '')
+      onNext()
+  }
 
   const onChangeReceiverUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     setReceiverUsername(e.target.value)
@@ -52,7 +59,10 @@ const ReceiverDetail = () => {
           case 'github':
             response = await fetch('https://api.github.com/users/' + receiverUsername)
             data = await response.json()
-            setReceiverUserId(data.id.toString() ?? '')
+            if (data.id)
+              setReceiverUserId(data.id.toString())
+            else
+              setReceiverUserId('')
             break;
           case 'twitter':
             response = await fetch('/api/twitter/' + receiverUsername)
@@ -70,7 +80,7 @@ const ReceiverDetail = () => {
     <Card>
       <CardHeader title='Receiver detail' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={onSubmit}>
           <Grid container spacing={5}>
             <Grid item xs={12} md={3}>
               <FormControl fullWidth>
@@ -93,6 +103,7 @@ const ReceiverDetail = () => {
                 fullWidth
                 type='text'
                 label='Receiver username'
+                error={receiverUserId === ''}
                 helperText={`${receiverUsername || '@username'}'s ID is ${receiverUserId || 'invalid'}`}
                 value={receiverUsername}
                 onChange={e => setReceiverUsername(e.target.value)}

@@ -1,4 +1,6 @@
 // ** React Imports
+import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 
 // ** MUI Imports
 import Container from '@mui/material/Container'
@@ -17,6 +19,16 @@ import { ReceiveContextProvider } from 'src/@core/hooks/useReceiveContenxt'
 // ** Demo Components Imports
 
 const Transfer = () => {
+  const { data: session } = useSession()
+  const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    if (session)
+      setStep(1)
+    else
+      setStep(0)
+  }, [session])
+
   return (
     <ReceiveContextProvider>
       <Container maxWidth="md">
@@ -25,13 +37,19 @@ const Transfer = () => {
             <ReceiverLogin />
           </Grid>
 
-          <Grid item xs={12}>
-            <VaultBalance />
-          </Grid>
+          {
+            step >= 1 &&
+            <Grid item xs={12}>
+              <VaultBalance />
+            </Grid>
+          }
 
-          <Grid item xs={12}>
-            <WithdrawToken />
-          </Grid>
+          {
+            step >= 2 &&
+            <Grid item xs={12}>
+              <WithdrawToken />
+            </Grid>
+          }
 
         </Grid>
       </Container>

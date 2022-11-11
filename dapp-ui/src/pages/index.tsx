@@ -1,4 +1,5 @@
 // ** React Imports
+import { useState, useEffect } from 'react'
 
 // ** MUI Imports
 import Container from '@mui/material/Container'
@@ -15,9 +16,20 @@ import { TransferContextProvider } from 'src/@core/hooks/useTransferContext'
 
 // ** Styled Component Import
 
-// ** Demo Components Imports
+// ** Custom Components Imports
+import useTronWeb from 'src/@core/hooks/useTronWeb'
 
 const Transfer = () => {
+  const tron = useTronWeb()
+  const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    if (tron.isConnect)
+      setStep(1)
+    else
+      setStep(0)
+  }, [tron.isConnect])
+
   return (
     <TransferContextProvider>
       <Container maxWidth="md">
@@ -26,17 +38,26 @@ const Transfer = () => {
             <ConnectWallet />
           </Grid>
 
-          <Grid item xs={12}>
-            <TransferDetail />
-          </Grid>
+          {
+            step >= 1 &&
+            <Grid item xs={12}>
+              <TransferDetail onNext={() => setStep(2)} />
+            </Grid>
+          }
 
-          <Grid item xs={12}>
-            <ReceiverDetail />
-          </Grid>
+          {
+            step >= 2 &&
+            <Grid item xs={12}>
+              <ReceiverDetail onNext={() => setStep(3)} />
+            </Grid>
+          }
 
-          <Grid item xs={12}>
-            <TransferSummary />
-          </Grid>
+          {
+            step >= 3 &&
+            <Grid item xs={12}>
+              <TransferSummary onNext={() => setStep(1)} />
+            </Grid>
+          }
 
         </Grid>
       </Container>

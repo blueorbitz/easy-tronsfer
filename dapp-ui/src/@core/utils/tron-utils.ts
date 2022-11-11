@@ -22,6 +22,21 @@ export function getProviderId(provider: string, userId: string) {
   return provider + '_' + userId
 }
 
+export async function convertTokenAmount(tokenAddress: string, amount: number) {
+  const contract = await window.tronWeb.contract().at(tokenAddress)
+  
+  const decimals = parseInt(await contract.decimals().call())
+  const _amount = amount * Math.pow(10, decimals)
+  return _amount
+}
+
+export async function approveTrc20(tokenAddress: string, amount: number): Promise<any> {
+  const contract = await window.tronWeb.contract().at(tokenAddress);
+
+  return await contract.approve(getContractConfig().contractAddress, amount)
+    .send({ feeLimit: 100_000_000 })
+}
+
 export async function transferTo(providerId: string, amount: number, tokenAddress: string|null = null) {
   const handler = await getContractHandler()
 
@@ -38,14 +53,21 @@ export async function transferTo(providerId: string, amount: number, tokenAddres
       ?.transferTrx(providerId)
       .send(txOptions)
   }
-  else
+  else {
+    const _amount = await convertTokenAmount(tokenAddress, amount)
+    await approveTrc20(tokenAddress, _amount)
     return await handler
-      ?.transferTrc20(providerId, tokenAddress, amount)
+      ?.transferTrc20(providerId, tokenAddress, _amount)
       .send(txOptions)
+  }
 }
 
 export async function withdrawToWallet(providerId: string, amount: number, wallet: string, tokenAddress: string|null = null) {
 }
 
 export async function transferToProvider(fromProviderId: string, toProviderId: string, amount: number, tokenAddress: string|null = null) {
+}
+
+export async function getBalance(providerId: string) {
+  const handler = await getContractHandler()
 }

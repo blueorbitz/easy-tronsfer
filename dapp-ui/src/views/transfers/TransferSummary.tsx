@@ -1,6 +1,7 @@
 // ** React Imports
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+import type { ComponentFlowType } from 'types/app'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -14,7 +15,7 @@ import Modal from '@mui/material/Modal'
 // ** Custom Components Imports
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 import useTronWeb from 'src/@core/hooks/useTronWeb'
-import { getContractConfig, getProviderId, transferTo } from 'src/@core/utils/tron-utils'
+import { getContractConfig, getProviderId, convertTokenAmount, transferTo } from 'src/@core/utils/tron-utils'
 
 const ReceiptModal = ({ receipt }: any) => {
   const [open, setOpen] = React.useState(false)
@@ -51,7 +52,7 @@ const ReceiptModal = ({ receipt }: any) => {
         </Typography>
         <Typography id='modal-modal-description' sx={{ mt: 2 }}>
           <p>
-            Status of the transaction at: 
+            Status of the transaction at:
             <Link href={`${getContractConfig().explorer}/#/transaction/${receipt}`}>
               TronScan
             </Link>
@@ -63,11 +64,11 @@ const ReceiptModal = ({ receipt }: any) => {
   )
 }
 
-const TransferSummary = () => {
+const TransferSummary = ({ onNext }: ComponentFlowType) => {
   const [receipt, setReceipt] = useState('')
   const tron = useTronWeb()
   const {
-    contractAddress,
+    tokenAddress,
     transferAmount,
     receiverProvider,
     receiverUserId,
@@ -79,11 +80,16 @@ const TransferSummary = () => {
     e.preventDefault()
 
     const providerId = getProviderId(receiverProvider, receiverUserId)
-    const _receipt = await transferTo(providerId, transferAmount, contractAddress)
+    const _receipt = await transferTo(providerId, transferAmount, tokenAddress)
 
-    setReceipt(_receipt)
     resetAll()
+    onNext()
+    setReceipt(_receipt)
   }
+
+  useEffect(() => {
+    tron.trc20.setContractAddress(tokenAddress)
+  }, [tokenAddress])
 
   return (
     <Card>
@@ -97,9 +103,9 @@ const TransferSummary = () => {
           {`From: ${tron.address}`}
         </Typography>
         {
-          contractAddress != null &&
+          tokenAddress != null &&
           <Typography variant='body2'>
-            {`Token Contract: ${contractAddress}`}
+            {`Token Contract: ${tokenAddress}`}
           </Typography>
         }
         <Typography variant='body2'>

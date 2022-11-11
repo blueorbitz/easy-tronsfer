@@ -1,5 +1,6 @@
 // ** React Imports
-import { useState } from 'react'
+import React, { useState } from 'react'
+import type { ComponentFlowType } from 'types/app'
 
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
@@ -20,7 +21,7 @@ import { useDebounce, useUpdateEffect } from 'usehooks-ts'
 import useTronWeb from 'src/@core/hooks/useTronWeb'
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 
-const TransferDetail = () => {
+const TransferDetail = ({ onNext }: ComponentFlowType) => {
   const tron = useTronWeb()
   const [tokenType, setTokenType] = useState('TRX')
   const {
@@ -28,6 +29,12 @@ const TransferDetail = () => {
     transferAmount, setTransferAmount,
   } = useTransferContext()
   const debounceTokenAddress = useDebounce<string>(tokenAddress, 1000)
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (transferAmount > 0)
+      onNext()
+  }
 
   useUpdateEffect(() => {
     (async () => {
@@ -40,7 +47,7 @@ const TransferDetail = () => {
     <Card>
       <CardHeader title='Transfer detail' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={onSubmit}>
           <Grid container spacing={5}>
             <Grid item xs={12} md={3}>
               <FormControl fullWidth>
@@ -78,6 +85,7 @@ const TransferDetail = () => {
                 fullWidth
                 type='number'
                 label='Amount'
+                error={transferAmount <= 0}
                 helperText={`Amount in ${tron.trc20.symbol || 'TRX'}`}
                 value={transferAmount}
                 onChange={e => setTransferAmount(parseFloat(e.target.value))}

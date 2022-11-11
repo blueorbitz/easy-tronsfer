@@ -21,7 +21,11 @@ const ReceiverLogin = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box>
             <Typography variant='body2'>
-              Sign in using your preferred provider where you have received the token.
+              {
+                session
+                  ? `Sign in using "${session?.account.provider}" - ${session?.account.providerAccountId}`
+                  : 'Sign in using your preferred provider where you have received the token.'
+              }
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'right' }}>
