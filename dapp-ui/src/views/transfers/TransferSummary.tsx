@@ -15,7 +15,7 @@ import Modal from '@mui/material/Modal'
 // ** Custom Components Imports
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 import useTronWeb from 'src/@core/hooks/useTronWeb'
-import { getContractConfig, getProviderId, convertTokenAmount, transferTo } from 'src/@core/utils/tron-utils'
+import { getContractConfig, getProviderId, transferTo } from 'src/@core/utils/tron-utils'
 
 const ReceiptModal = ({ receipt }: any) => {
   const [open, setOpen] = React.useState(false)
@@ -57,7 +57,7 @@ const ReceiptModal = ({ receipt }: any) => {
               TronScan
             </Link>
           </p>
-          TxId: <pre>{receipt}</pre>
+          TxId: <code>{receipt}</code>
         </Typography>
       </Box>
     </Modal>

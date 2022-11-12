@@ -1,5 +1,5 @@
 // ** React Imports
-import { useState } from 'react'
+import type { ComponentFlowType } from 'types/app'
 
 // ** MUI Imports
 import Card from '@mui/material/Card'
@@ -17,22 +17,24 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 
 // ** Custom Components Imports
+import useReceiveContext from 'src/@core/hooks/useReceiveContext'
 
-function createData(
-  token: string,
-  tokenAddress: string,
+function createData(record: {
+  name: string,
+  symbol: string,
+  address?: string,
   balance: number,
-) {
-  return { token, tokenAddress, balance };
+}) {
+  return {
+    token: `${record.name} (${record.symbol})`,
+    tokenAddress: record.address,
+    balance: record.balance,
+  }
 }
 
-const rows = [
-  createData('TRX', '', 100),
-  createData('USDT', 'xxxxxxxxxxxx', 100),
-  createData('PWP', 'xxxxxxxxxxxx', 100),
-];
+const VaultBalance = ({ onNext }: ComponentFlowType) => {
+  const { balance } = useReceiveContext()
 
-const VaultBalance = () => {
   return (
     <Card>
       <CardHeader title='Balance in Vault' titleTypographyProps={{ variant: 'h6' }} />
@@ -47,7 +49,7 @@ const VaultBalance = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {rows.map((row) => (
+              {balance.map(createData).map((row: any) => (
                 <TableRow
                   key={row.token}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -63,13 +65,17 @@ const VaultBalance = () => {
           </Table>
         </TableContainer>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography variant='h6'>
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
-            <Button variant='contained'>Withdraw</Button>
-          </Box>
-        </Box>
+        {
+          balance.length
+            ? <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography variant='h6'>
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', '& :not(:last-child)': { mr: 4 } }}>
+                <Button variant='contained' onClick={onNext}>Withdraw</Button>
+              </Box>
+            </Box>
+            : <p>No balance was found in this account</p>
+        }
       </CardContent>
     </Card>
   )

@@ -12,7 +12,7 @@ import Grid from '@mui/material/Grid'
 import ReceiverLogin from 'src/views/transfers/ReceiverLogin'
 import VaultBalance from 'src/views/transfers/VaultBalance'
 import WithdrawToken from 'src/views/transfers/WithdrawToken'
-import { ReceiveContextProvider } from 'src/@core/hooks/useReceiveContenxt'
+import { ReceiveContextProvider } from 'src/@core/hooks/useReceiveContext'
 
 // ** Styled Component Import
 
@@ -40,14 +40,14 @@ const Transfer = () => {
           {
             step >= 1 &&
             <Grid item xs={12}>
-              <VaultBalance />
+              <VaultBalance onNext={() => setStep(2)}/>
             </Grid>
           }
 
           {
             step >= 2 &&
             <Grid item xs={12}>
-              <WithdrawToken />
+              <WithdrawToken onNext={() => setStep(3)}/>
             </Grid>
           }
 
