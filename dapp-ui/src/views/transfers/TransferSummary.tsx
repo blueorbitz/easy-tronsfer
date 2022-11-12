@@ -15,12 +15,17 @@ import Modal from '@mui/material/Modal'
 // ** Custom Components Imports
 import useTransferContext from 'src/@core/hooks/useTransferContext'
 import useTronWeb from 'src/@core/hooks/useTronWeb'
+import useToastError from 'src/@core/hooks/useToastError'
 import { getContractConfig, getProviderId, transferTo } from 'src/@core/utils/tron-utils'
+import { errorString } from 'src/@core/utils/text-format'
 
-const ReceiptModal = ({ receipt }: any) => {
+const ReceiptModal = ({ receipt, onNext }: any) => {
   const [open, setOpen] = React.useState(false)
   const handleOpen = () => setOpen(true)
-  const handleClose = () => setOpen(false)
+  const handleClose = () => {
+    setOpen(false)
+    onNext()
+  }
 
   useEffect(() => {
     if (receipt !== '')
@@ -66,6 +71,7 @@ const ReceiptModal = ({ receipt }: any) => {
 
 const TransferSummary = ({ onNext }: ComponentFlowType) => {
   const [receipt, setReceipt] = useState('')
+  const { ToastError, setToast } = useToastError()
   const tron = useTronWeb()
   const {
     tokenAddress,
@@ -79,12 +85,16 @@ const TransferSummary = ({ onNext }: ComponentFlowType) => {
   const onSubmit = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
 
-    const providerId = getProviderId(receiverProvider, receiverUserId)
-    const _receipt = await transferTo(providerId, transferAmount, tokenAddress)
+    try {
+      const providerId = getProviderId(receiverProvider, receiverUserId)
+      const _receipt = await transferTo(providerId, transferAmount, tokenAddress)
 
-    resetAll()
-    onNext()
-    setReceipt(_receipt)
+      resetAll()
+      setReceipt(_receipt)
+    }
+    catch (error: any) {
+      setToast(error?.message ?? error.toString())
+    }
   }
 
   useEffect(() => {
@@ -122,7 +132,8 @@ const TransferSummary = ({ onNext }: ComponentFlowType) => {
           </Box>
         </Box>
       </CardContent>
-      <ReceiptModal receipt={receipt} />
+      <ReceiptModal receipt={receipt} onNext={onNext} />
+      <ToastError />
     </Card>
   )
 }

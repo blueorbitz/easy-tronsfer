@@ -22,6 +22,7 @@ import useReceiveContext from 'src/@core/hooks/useReceiveContext'
 
 const ConfirmTransferModal = ({ openState, onNext }: any) => {
   const [open, setOpen] = openState
+  const [errorMsg, setErrorMsg] = useState('')
   const [confirmText, setConfirmText] = useState('')
   const {
     providerId, fetchBalance,
@@ -35,13 +36,17 @@ const ConfirmTransferModal = ({ openState, onNext }: any) => {
   const isError = confirmText !== receiverUserId
 
   const send = async () => {
-    const txid = await transferToProvider(providerId(), getProviderId(receiverProvider, receiverUserId), transferAmount, tokenAddress)
-    console.log('transfer txid', txid)
-    
-    setOpen(false)
-    onNext()
+    try {
+      const txid = await transferToProvider(providerId(), getProviderId(receiverProvider, receiverUserId), transferAmount, tokenAddress)
+      console.log('transfer txid', txid)
 
-    await fetchBalance()
+      setOpen(false)
+      onNext()
+      await fetchBalance()
+
+    } catch (error: any) {
+      setErrorMsg(error?.message ?? error.toString())
+    }
   }
 
   const onDonate = async (e: React.MouseEvent<HTMLElement>) => {
@@ -101,6 +106,11 @@ const ConfirmTransferModal = ({ openState, onNext }: any) => {
             onChange={e => setConfirmText(e.target.value)}
           />
         </Typography>
+
+        {
+          errorMsg !== '' &&
+          <Typography variant='body2' color='red'>{errorMsg}</Typography>
+        }
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
           <Typography variant='h6'>

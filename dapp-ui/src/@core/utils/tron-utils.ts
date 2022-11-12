@@ -53,7 +53,7 @@ export async function transferTo(providerId: string, amount: number, tokenAddres
     keepTxID: true,
   }
 
-  if (tokenAddress === null) {
+  if (tokenAddress === '' || tokenAddress === null) {
     txOptions.callValue = window.tronWeb.toSun(amount)
     return await handler
       ?.transferTrx(providerId)

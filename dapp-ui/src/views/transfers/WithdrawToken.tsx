@@ -29,6 +29,7 @@ import {
 const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
   const tron = useTronWeb()
   const [open, setOpen] = openState
+  const [errorMsg, setErrorMsg] = useState('')
   const [confirmText, setConfirmText] = useState('')
   const {
     providerId, fetchBalance,
@@ -39,14 +40,18 @@ const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
   const isError = !tron.isConnect || confirmText !== tron.address
 
   const withdraw = async () => {
-    const txid = await withdrawToWallet(providerId(), transferAmount, tron.address, tokenAddress)
-    console.log('withdraw txid', txid)
+    try {
+      const txid = await withdrawToWallet(providerId(), transferAmount, tron.address, tokenAddress)
+      console.log('withdraw txid', txid)
 
-    setTransferAmount(0)
-    setTokenAddress('')
-    await fetchBalance()
+      setTransferAmount(0)
+      setTokenAddress('')
+      await fetchBalance()
 
-    setOpen(false)
+      setOpen(false)
+    } catch (error: any) {
+      setErrorMsg(error?.message ?? error.toString())
+    }
   }
 
   const onDonate = async (e: React.MouseEvent<HTMLElement>) => {
@@ -107,6 +112,11 @@ const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
           />
         </Typography>
 
+        {
+          errorMsg !== '' &&
+          <Typography variant='body2' color='red'>{errorMsg}</Typography>
+        }
+
         <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', mt: 2 }}>
           <Typography variant='h6'>
           </Typography>
@@ -119,7 +129,6 @@ const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
             </Button>
           </Box>
         </Box>
-
       </Box>
     </Modal>
   )
@@ -141,7 +150,7 @@ const WithdrawToken = ({ onNext }: ComponentFlowType) => {
 
   const onWithdrawToWallet = async (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
-    
+
     if (transferAmount > 0)
       isOpenConfirmWithdrawToWallet[1](true)
   }
