@@ -99,3 +99,20 @@ export async function getBalance(providerId: string) {
   else
     return []
 }
+
+export async function getAbout() {
+  const config = getContractConfig()
+
+  const [resOwner, resContract] = await Promise.all([
+    fetch(config.host + `/v1/accounts/${config.ownerHex}`),
+    fetch(config.host + `/v1/accounts/${config.contractHex}`),
+  ])
+
+  const owner = await resOwner.json()
+  const contract = await resContract.json()
+
+  return {
+    owner: owner.data[0],
+    contract: contract.data[0],
+  }
+}
