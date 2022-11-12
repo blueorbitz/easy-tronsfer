@@ -15,6 +15,9 @@ export const ReceiveContextProvider = (props: React.ComponentProps<any>) => {
   const [balance, setBalance] = useState<any[]>([])
   const [tokenAddress, setTokenAddress] = useState('')
   const [transferAmount, setTransferAmount] = useState(0)
+  const [receiverProvider, setReceiverProvider] = useState('')
+  const [receiverUserId, setReceiverUserId] = useState('')
+  const [receiverUsername, setReceiverUsername] = useState('')
 
   const providerId = () => {
     const account = session?.account
@@ -39,6 +42,9 @@ export const ReceiveContextProvider = (props: React.ComponentProps<any>) => {
       balance, fetchBalance,
       tokenAddress, setTokenAddress,
       transferAmount, setTransferAmount,
+      receiverProvider, setReceiverProvider,
+      receiverUserId, setReceiverUserId,
+      receiverUsername, setReceiverUsername,
     }}>
       {props.children}
     </ReceiveContext.Provider>

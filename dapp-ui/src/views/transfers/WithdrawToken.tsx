@@ -38,21 +38,7 @@ const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
 
   const isError = !tron.isConnect || confirmText !== tron.address
 
-  const onDonate = async (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault()
-    if (isError) return
-
-    const owner = getContractConfig().owner
-    const amount = window.tronWeb.toSun(50)
-
-    await window.tronWeb.trx.sendTransaction(owner, amount)
-    await withdrawToWallet(providerId(), transferAmount, tron.address, tokenAddress)
-  }
-
-  const onWithdraw = async (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault()
-    if (isError) return
-
+  const withdraw = async () => {
     const txid = await withdrawToWallet(providerId(), transferAmount, tron.address, tokenAddress)
     console.log('withdraw txid', txid)
 
@@ -61,6 +47,24 @@ const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
     await fetchBalance()
 
     setOpen(false)
+  }
+
+  const onDonate = async (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    if (isError) return
+
+    const owner = getContractConfig().owner
+    const amount = window.tronWeb.toSun(50)
+
+    await window.tronWeb.trx.sendTransaction(owner, amount)
+    await withdraw()
+  }
+
+  const onWithdraw = async (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    if (isError) return
+
+    await withdraw()
   }
 
   const style = {
@@ -122,10 +126,9 @@ const ConfirmWithdrawToWalletModal = ({ openState }: any) => {
 }
 
 const WithdrawToken = ({ onNext }: ComponentFlowType) => {
-  const tron = useTronWeb()
   const {
-    providerId, balance,
-    tokenAddress, setTokenAddress,
+    balance,
+    setTokenAddress,
     transferAmount, setTransferAmount,
   } = useReceiveContext()
   const [tokenType, setTokenType] = useState('TRX')

@@ -9,10 +9,10 @@ export default async function (req: NextApiRequest, res: NextApiResponse<any>) {
 
   const { tronWeb, config, token } = validation
   const body = JSON.parse(req.body)
-  const { providerId, amount, wallet, tokenAddress } = body
+  const { fromProviderId, toProviderId, amount, tokenAddress } = body
 
   const authProviderId = getProviderId(token.account.provider, token.account.providerAccountId)
-  if (authProviderId !== providerId) {
+  if (authProviderId !== fromProviderId) {
     return res.status(401).send({})
   }
 
@@ -21,7 +21,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse<any>) {
   let result
   if (tokenAddress === null || tokenAddress === '') {
     const _amount = tronWeb.toSun(amount)
-    result = await handler.withdrawTrxToWallet(providerId, _amount, wallet)
+    result = await handler.transferTrxToProvider(fromProviderId, toProviderId, _amount)
       .send({
         feeLimit: 100_000_000,
         shouldPollResponse: false,
@@ -30,7 +30,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse<any>) {
   else {
     const tokenInfo = await getTokenInfo(tronWeb, tokenAddress)
     const _amount = tokenInfo.amountToContract(amount)
-    result = await handler.withdrawTrc20ToWallet(providerId, tokenAddress, _amount, wallet)
+    result = await handler.transferTrc20ToProvider(fromProviderId, toProviderId, tokenAddress, _amount)
       .send({
         feeLimit: 100_000_000,
         shouldPollResponse: false,

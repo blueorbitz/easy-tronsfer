@@ -71,56 +71,31 @@ export async function transferTo(providerId: string, amount: number, tokenAddres
 
 export async function withdrawToWallet(providerId: string, amount: number, wallet: string, tokenAddress: string | null = null) {
   const config = getContractConfig()
-  const respose = await fetch('/api/tron/withdrawToWallet', {
+  const res = await fetch('/api/tron/withdrawToWallet', {
     method: 'POST',
     body: JSON.stringify({ providerId, amount, wallet, tokenAddress, solidityNode: config.host })
   })
-  return respose
+  return await res.text()
 }
 
 export async function transferToProvider(fromProviderId: string, toProviderId: string, amount: number, tokenAddress: string | null = null) {
+  const config = getContractConfig()
+  const res = await fetch('/api/tron/transferToProvider', {
+    method: 'POST',
+    body: JSON.stringify({ fromProviderId, toProviderId, amount, tokenAddress, solidityNode: config.host })
+  })
+  return await res.text()
 }
 
 export async function getBalance(providerId: string) {
-  const handler = await getContractHandler()
-
-  const tokenAddresses: string[] = []
-  try {
-    for (let i = 0; true; i++) {
-      const tokenAddress = await handler.trc20Accounts(providerId, i).call()
-      tokenAddresses.push(tokenAddress)
-    }
-  } catch (error) {
-    // swallow the error
-  }
-
-  const tokenInfos = await Promise.all(tokenAddresses.map(tokenAddress =>
-    getTokenInfo(tokenAddress)
-  ))
-
-  const tokenBalanceInBigNumber = await Promise.all(tokenAddresses.map(tokenAddress =>
-    handler.trc20AccountBalance(providerId, tokenAddress).call()
-  ))
-
-  const trc20details = tokenAddresses.map((tokenAddress, i) => {
-    const balanceContract = window.tronWeb.toDecimal(tokenBalanceInBigNumber[i])
-    const balanceDisplay = tokenInfos[i].amountFromContract(balanceContract)
-
-    return { ...tokenInfos[i], balance: balanceDisplay }
+  const config = getContractConfig()
+  const res = await fetch('/api/tron/receiverBalance', {
+    method: 'POST',
+    body: JSON.stringify({ providerId, solidityNode: config.host })
   })
 
-  const trxDetails = []
-  try {
-    const trxBalanceInBigNumber = await handler.trxBalance(providerId).call()
-    const trxBalanceDisplay = window.tronWeb.fromSun(trxBalanceInBigNumber)
-    trxDetails.push({
-      name: 'Tron',
-      symbol: 'TRX',
-      balance: parseFloat(trxBalanceDisplay),
-    })
-  } catch (error) {
-    // swallow the error
-  }
-
-  return [...trxDetails, ...trc20details]
+  if (res.status === 200)
+    return await res.json()
+  else
+    return []
 }
