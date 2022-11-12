@@ -17,7 +17,6 @@ import useTransferContext from 'src/@core/hooks/useTransferContext'
 import useTronWeb from 'src/@core/hooks/useTronWeb'
 import useToastError from 'src/@core/hooks/useToastError'
 import { getContractConfig, getProviderId, transferTo } from 'src/@core/utils/tron-utils'
-import { errorString } from 'src/@core/utils/text-format'
 
 const ReceiptModal = ({ receipt, onNext }: any) => {
   const [open, setOpen] = React.useState(false)
@@ -33,13 +32,12 @@ const ReceiptModal = ({ receipt, onNext }: any) => {
   }, [receipt])
 
   const style = {
-    position: 'absolute' as 'absolute',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: 500,
     bgcolor: 'background.paper',
-    // border: '2px solid #000',
     boxShadow: 24,
     p: 4,
   }

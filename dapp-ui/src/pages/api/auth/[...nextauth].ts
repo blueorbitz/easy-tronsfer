@@ -4,7 +4,6 @@ import TwitterProvider from 'next-auth/providers/twitter'
 
 export const authOptions = {
   secret: process.env.NEXT_PUBLIC_SECRET,
-  // Configure one or more authentication providers
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_ID ?? '',
@@ -20,7 +19,8 @@ export const authOptions = {
   ],
   
   callbacks: {
-    async jwt({ token, user, account, profile, isNewUser }: any) {
+    async jwt({ token, account, profile }: any) {
+  
       // console.log('JWT', { token, user, account, profile, isNewUser })
       if (account) {
         token.account = {

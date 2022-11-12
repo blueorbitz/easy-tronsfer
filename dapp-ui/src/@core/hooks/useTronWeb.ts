@@ -14,12 +14,10 @@ interface TronHookType {
 }
 
 function isTronWebConnected(): boolean {
-  // const solidityNode: string = process.env.SOLIDITY_NODE || ''
 
   return typeof window !== "undefined"
     && window.tronWeb
     && window.tronWeb.defaultAddress.base58
-    // && window.tronWeb.solidityNode.host === solidityNode
 }
 
 function walletAddress(): string {
@@ -65,20 +63,11 @@ export default function useTronWeb(): TronHookType {
 
   useEffect(() => {
     window.addEventListener('message', tronLinkEventListener)
+
     return () => {
       window.removeEventListener('message', tronLinkEventListener)
     }
   }, []);
-
-  async function trc20Call(trc20ContractAddress: string, methodName: string) {
-    try {
-      const contract = await window.tronWeb.contract().at(trc20ContractAddress)
-      const result = await contract[methodName]().call()
-      console.log('trc20Call', result)
-    } catch(error) {
-      console.error('trc20Call error:', error)
-    }
-  }
 
   async function trc20ContractAddress(trc20ContractAddress: string) {
     try {
@@ -88,6 +77,7 @@ export default function useTronWeb(): TronHookType {
       setTrc20Symbol(await contract.symbol().call())
       setTrc20Decimals(parseInt(await contract.decimals().call()))
       setTrc20Address(trc20ContractAddress)
+
       return true
     } catch(error) {
       console.log(error)
@@ -96,6 +86,7 @@ export default function useTronWeb(): TronHookType {
       setTrc20Symbol('')
       setTrc20Decimals(0)
       setTrc20Address('')
+  
       return false
     }
   }

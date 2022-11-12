@@ -16,6 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
   try {
     const clientResp = await client.get('users/by/username/' + handle)
+
     return res.send(clientResp.data)
   } catch (error) {
     return res.status(400).send(error)

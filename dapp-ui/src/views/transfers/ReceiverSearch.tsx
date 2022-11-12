@@ -43,6 +43,7 @@ const ReceiverSearch = ({ onNext, nextText = 'Next', useCustomContext }: Compone
   useUpdateEffect(() => {
     if (receiverUsername === '') {
       setReceiverUserId('')
+
       return
     }
 

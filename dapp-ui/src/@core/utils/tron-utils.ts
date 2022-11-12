@@ -5,6 +5,7 @@ export function getContractConfig() {
     return contractConfig[0]
 
   const node = window.tronWeb.solidityNode.host
+
   return contractConfig.find(o => o.host === node) ?? contractConfig[0]
 }
 
@@ -55,6 +56,7 @@ export async function transferTo(providerId: string, amount: number, tokenAddres
 
   if (tokenAddress === '' || tokenAddress === null) {
     txOptions.callValue = window.tronWeb.toSun(amount)
+
     return await handler
       ?.transferTrx(providerId)
       .send(txOptions)
@@ -63,6 +65,7 @@ export async function transferTo(providerId: string, amount: number, tokenAddres
     const tokenInfo = await getTokenInfo(tokenAddress)
     const _amount = tokenInfo.amountToContract(amount)
     await approveTrc20(tokenAddress, _amount)
+
     return await handler
       ?.transferTrc20(providerId, tokenAddress, _amount)
       .send(txOptions)
@@ -75,6 +78,7 @@ export async function withdrawToWallet(providerId: string, amount: number, walle
     method: 'POST',
     body: JSON.stringify({ providerId, amount, wallet, tokenAddress, solidityNode: config.host })
   })
+
   return await res.text()
 }
 
@@ -84,6 +88,7 @@ export async function transferToProvider(fromProviderId: string, toProviderId: s
     method: 'POST',
     body: JSON.stringify({ fromProviderId, toProviderId, amount, tokenAddress, solidityNode: config.host })
   })
+
   return await res.text()
 }
 

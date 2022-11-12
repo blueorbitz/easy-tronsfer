@@ -9,6 +9,7 @@ import useTronWeb from 'src/@core/hooks/useTronWeb'
 
 const ConnectWallet = () => {
   const tron = useTronWeb()
+
   return (
     <Card>
       <CardHeader title='Connect wallet' titleTypographyProps={{ variant: 'h6' }} />

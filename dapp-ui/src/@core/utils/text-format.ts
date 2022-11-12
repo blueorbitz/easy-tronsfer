@@ -9,13 +9,14 @@ export function shortenText(text: string, length: number) {
     return text
   
   const displaySize = (length - 3) / 2
-  return text.substring(0, displaySize) + '...' + text.substring(text.length - displaySize)
+
+  return `${text.substring(0, displaySize)}...${text.substring(text.length - displaySize)}`
 }
 
 export function errorString(error: any) {
-  let message: string = ''
-  typeof error === 'string'
-    ? message = error
-    : message = error.message || error.error
+  const message = typeof error === 'string'
+    ? error
+    : error.message || error.error
+
   return message
 }

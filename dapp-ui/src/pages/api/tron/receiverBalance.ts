@@ -19,5 +19,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse<any>) {
   const handler = await tronWeb.contract().at(config.contractAddress)
 
   const data = await getBalance(tronWeb, handler, providerId)
+
   return res.status(200).send(data)
 }
