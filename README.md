@@ -6,3 +6,9 @@
 
 ## Dapp-ui
 - Follow the README instruction in the `dapp-ui`.
+
+## Demo (Shasta)
+- https://easy-tronsfer.vercel.app
+
+## Video
+- https://youtu.be/gbcRq-s7ywE
